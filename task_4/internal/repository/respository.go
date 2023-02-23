@@ -2,13 +2,10 @@ package repository
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"example.com/machine_test/task_4/pkg/models"
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -28,7 +25,6 @@ func (rep *Respository) InsertItemRepository(item models.Item) error {
 	})
 
 	if err != nil {
-		log.Println("Error inserting", err)
 		return err
 	}
 
@@ -43,12 +39,7 @@ func (rep *Respository) GetOneItemRepository(id string) (models.Item, error) {
 
 	collection := rep.Client.Database("items").Collection("items")
 
-	docID, err := primitive.ObjectIDFromHex(uuid.MustParse(id).String())
-	if err != nil {
-		return item, err
-	}
-
-	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&item)
+	err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&item)
 	if err != nil {
 		return item, err
 	}
@@ -67,7 +58,6 @@ func (rep *Respository) GetAllItemsRespository() ([]models.Item, error) {
 
 	cursor, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
-		log.Println("Finding all docs error:", err)
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -79,7 +69,6 @@ func (rep *Respository) GetAllItemsRespository() ([]models.Item, error) {
 
 		err := cursor.Decode(&item)
 		if err != nil {
-			log.Println(err)
 			return nil, err
 		}
 		items = append(items, item)
@@ -94,14 +83,9 @@ func (rep *Respository) UpdateOneItemRepository(item models.Item) error {
 
 	collection := rep.Client.Database("items").Collection("items")
 
-	docID, err := primitive.ObjectIDFromHex(string(uuid.MustParse(item.ID).String()))
-	if err != nil {
-		return err
-	}
-
-	_, err = collection.UpdateOne(
+	_, err := collection.UpdateOne(
 		ctx,
-		bson.M{"_id": docID},
+		bson.M{"_id": item.ID},
 		bson.D{
 			{
 				"$set", bson.D{
@@ -126,12 +110,7 @@ func (rep *Respository) DeleteOneItemRespository(id string) error {
 
 	collection := rep.Client.Database("items").Collection("items")
 
-	docID, err := primitive.ObjectIDFromHex(string(uuid.MustParse(id).String()))
-	if err != nil {
-		return err
-	}
-
-	_, err = collection.DeleteOne(ctx, bson.M{"_id": docID})
+	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
 	if err != nil {
 		return err
 	}

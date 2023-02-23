@@ -1,31 +1,42 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"example.com/machine_test/task_4/pkg/db"
 	"example.com/machine_test/task_4/pkg/routes"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
-func main() {
-	// err := godotenv.Load(".env")
-	// if err != nil {
-	// 	log.Fatal("Error loading .env : ", err)
-	// }
+var port string
 
-	err := db.ConnectMongo()
+func init() {
+	// Loading the .env file
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env : ", err)
+	}
+
+	// Connecting to Mongo DB
+	err = db.ConnectMongo()
 	if err != nil {
 		log.Fatal(err)
 	}
+}
 
+func main() {
+	// Creating a new mux router
 	mux := mux.NewRouter()
 
 	routes.InitializeRoutes(mux)
+	port = os.Getenv("SERVER_PORT")
 
-	log.Println("Starting server on port :3000")
-	err = http.ListenAndServe(":3000", mux)
+	log.Printf("Starting server on port :%s", port)
+	err := http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
 	if err != nil {
 		log.Fatal("SERVER ERROR : ", err)
 	}

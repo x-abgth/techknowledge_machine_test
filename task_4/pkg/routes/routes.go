@@ -12,7 +12,7 @@ func InitializeRoutes(mux *mux.Router) {
 
 	mux.HandleFunc("/items", app.GetAllItems).Methods("GET")
 	mux.HandleFunc("/items/{id}", app.GetOneItem).Methods("GET")
-	mux.HandleFunc("/items/{id}", app.CreateOneItem).Methods("POST")
+	mux.HandleFunc("/items", app.CreateOneItem).Methods("POST")
 	mux.HandleFunc("/items/{id}", app.UpdateOneItem).Methods("PUT")
 	mux.HandleFunc("/items/{id}", app.DeleteOneItem).Methods("DELETE")
 }

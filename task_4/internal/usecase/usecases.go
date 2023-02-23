@@ -29,7 +29,8 @@ func InsertItemUsecase(item models.Item) error {
 	return rep.InsertItemRepository(item)
 }
 
-func UpdateItemUsecase(item models.Item) error {
+func UpdateItemUsecase(id string, item models.Item) error {
+	item.ID = id
 	return rep.UpdateOneItemRepository(item)
 }
 

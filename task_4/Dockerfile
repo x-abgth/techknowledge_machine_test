@@ -10,16 +10,16 @@ COPY . .
 
 RUN go mod tidy
 
-RUN go build -o main
+RUN cd cmd/api/ && go build -o main
 
 # Final running stage
 FROM alpine:latest
 
 WORKDIR /app
 
-COPY .env .
+COPY --from=builder /app/cmd/api/main .
 
-COPY --from=builder /app/main .
+COPY --from=builder /app/.env .
 
 RUN chmod +x ./main
 
