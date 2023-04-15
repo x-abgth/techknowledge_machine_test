@@ -2,52 +2,85 @@ package main
 
 import (
 	"fmt"
-	"net"
+	"log"
 	"os"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
 
+type UptimeData struct {
+	Server  string `json:"server"`
+	Status  string `json:"status"`
+	Users   string `json:"users"`
+	Command string `json:"command"`
+}
+
 func main() {
-	// Set the SSH configuration parameters
-	sshConfig := &ssh.ClientConfig{
-		User: "Swaroop",
+	if len(os.Args) != 4 {
+		log.Println("Error : Use command like - go run main.go <server-ip> <username> <password>")
+		return
+	}
+
+	serverIP := os.Args[1]
+	username := os.Args[2]
+	password := os.Args[3]
+
+	output, err := runUptimeCommand(serverIP, username, password)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// err = parseUptimeOutput(output)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
+
+	fmt.Println(output)
+}
+
+func runUptimeCommand(serverIP, username, password string) (string, error) {
+	config := &ssh.ClientConfig{
+		User: username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password("cvTOaF06RjdArA"),
+			ssh.Password(password),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	// Connect to the remote SSH server
-	conn, err := net.Dial("tcp", "tty.sdf.org:22")
+	client, err := ssh.Dial("tcp", serverIP+":22", config)
 	if err != nil {
-		fmt.Printf("Failed to connect to remote server: %s", err)
-		os.Exit(1)
+		return "", fmt.Errorf("Failed to connect to server: %v", err)
 	}
 
-	// Establish an SSH connection
-	sshConn, chans, reqs, err := ssh.NewClientConn(conn, "tty.sdf.org", sshConfig)
+	session, err := client.NewSession()
 	if err != nil {
-		fmt.Printf("Failed to establish SSH connection: %s", err)
-		os.Exit(1)
+		return "", fmt.Errorf("Failed to create SSH session: %v", err)
 	}
 
-	// Create an SSH client using the connection
-	sshClient := ssh.NewClient(sshConn, chans, reqs)
-
-	// Run an SSH command on the remote server
-	session, err := sshClient.NewSession()
-	if err != nil {
-		fmt.Printf("Failed to create SSH session: %s", err)
-		os.Exit(1)
-	}
 	defer session.Close()
 
-	output, err := session.CombinedOutput("ls -la")
+	output, err := session.Output("uptime")
 	if err != nil {
-		fmt.Printf("Failed to run command: %s", err)
-		os.Exit(1)
+		return "", fmt.Errorf("Failed to run command: %v", err)
 	}
 
-	fmt.Println(string(output))
+	fields := strings.Fields(string(output))
+	// loadAvgFields := strings.Split(fields[9], ",")
+	// var loadAverage []float64
+	// for _, field := range loadAvgFields {
+	// 	load, err := strconv.ParseFloat(field, 64)
+	// 	if err == nil {
+	// 		loadAverage = append(loadAverage, load)
+	// 	}
+	// }
+
+	// fmt.Println(fields)
+	fmt.Println(fields[48:500])
+
+	return "", nil
 }
+
+// go run main.go <server-ip> <username> <password>
