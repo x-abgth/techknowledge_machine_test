@@ -19,18 +19,22 @@ You can also this postman api collection link to ease the process -
 method = "POST"<br><br>
 ![insert-one-item](outputs/insert-one-item.png)
 
+### Get all items
 - `localhost:3000/items`<br>
 method = "GET"<br><br>
 ![get-all-items](outputs/get-all-items.png)
 
+### Get one item
 - `localhost:3000/items/{id}`<br>
 method = "GET"<br><br>
 ![get-one-item](outputs/get-one-item.png)
 
+### Update one item
 - `localhost:3000/items/{id}`<br>
 method = "PUT"<br><br>
 ![update-one-items](outputs/update-one-item.png)
 
+### Delete one item
 - `localhost:3000/items/{id}`<br>
 method = "DELETE"<br><br>
 ![delete-one-items](outputs/delete-one-item.png)
