@@ -11,7 +11,7 @@ var rep repository.Respository
 
 func NewClientInit(client *mongo.Client) {
 	rep = repository.Respository{
-		Client: client,
+		Items: []models.Item{},
 	}
 }
 
