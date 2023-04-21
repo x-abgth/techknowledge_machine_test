@@ -20,6 +20,6 @@ func main() {
 		}(i)
 
 		// Wait until the go routine finish the task
-		wg.Wait()
 	}
+	wg.Wait()
 }
