@@ -15,5 +15,10 @@ You can also this postman api collection link to ease the process -
 ## Outputs
 
 ### Inserting an item
-`localhost:3000/items`<br>
+- `localhost:3000/items`<br>
+method = "POST"<br>
 [insert-one-item](outputs/insert-one-item.png)
+
+- `localhost:3000/items`<br>
+method = "GET"<br>
+[get-all-items](outputs/get-all-items.png)
